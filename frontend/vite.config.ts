@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
     plugins: [react()],
     build: {
-        outDir: "../backend/static",
+        outDir: "dist",
         emptyOutDir: true,
         sourcemap: true
     },
@@ -13,7 +13,7 @@ export default defineConfig({
         proxy: {
             '/chatgpt': "http://localhost:8000",
             '/api/get-speech-token': "http://localhost:8000",
-            '/api/get-storage-account': "http://localhost:8000",            
+            '/api/get-storage-account': "http://localhost:8000",
             '/api/get-blob': "http://localhost:8000"
         },
         host: true

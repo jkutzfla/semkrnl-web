@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 
+from semantickernelcompletion import completion
+
 app = Flask(__name__, static_folder='static', static_url_path='')
 
 @app.route('/')
@@ -11,8 +13,12 @@ def hello():
 	return "<p>Hello, World!</p>"
 
 @app.route('/chatgpt', methods=['POST'])
-def chatgpt():
+async def chatgpt():
 	data = request.get_json()
+	query = data.get("query", "")
+	print(f"Query: {query}")
+	answer = await completion(query)
+	print(f"Answer: {answer}")
  # AskResponseGpt= {
  #   conversation_id: string;
  #   answer: string;
@@ -24,12 +30,12 @@ def chatgpt():
  #};
 	response = {
 		"conversation_id": data["conversation_id"],
-		"answer": "Hello, World!",
+		"answer": answer,
 		"current_state": "active",
 		"thoughts": "I'm a bot",
-		"data_points": ["hello", "world", data.get("query", "")]
+		"data_points": [query]
 	}
-
+	print(f"Response: {response}")
 	return jsonify(response)
 
 @app.route('/api', methods=['GET','POST'])

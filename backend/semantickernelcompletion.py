@@ -1,17 +1,24 @@
 import sys
+import os
 import asyncio
 from azure.identity.aio import DefaultAzureCredential
 from semantic_kernel.agents.azure_ai import AzureAIAgent
 
-AGENT1_ID = "asst_5Af1f1SqPcbXKLGlQG3bSOyR" #a test agent that will say PASSTO_AGENTNAME
-AGENT1_ID = "asst_nn5W2GMJBtFZdKbjJ45c177Z" #ChemNovus HR Q&A Main Agent, in the ChemNovus project
-AGENT1_ID = "asst_MiosvJFjX8XjDwTKzCHj3NSc" #Contoso_Sales_Agent
+from dotenv import load_dotenv
+load_dotenv()
 
-AGENT1_ID = "asst_WLdYwKlxTsYKDeyNrvlJj4OY" #Agent376_With_knowledge
+AGENT1_ID = os.getenv('AGENT1_ID') #a primary agent that will say PASSTO_AGENTNAME
+AGENT2_ID = os.getenv('AGENT2_ID') #a secondary agent that will be called by the primary agent
+AGENT3_ID = os.getenv('AGENT3_ID') #a tertiary agent that will be called by the secondary agent
+
+# AGENT1_ID = "asst_nn5W2GMJBtFZdKbjJ45c177Z" #ChemNovus HR Q&A Main Agent, in the ChemNovus project
+# AGENT1_ID = "asst_MiosvJFjX8XjDwTKzCHj3NSc" #Contoso_Sales_Agent
+
+# AGENT1_ID = "asst_WLdYwKlxTsYKDeyNrvlJj4OY" #Agent376_With_knowledge
 SUBAGENT_WORD = "PASSTO_"
 subagents = {
-    'ONBOARDING': "asst_aFZH4PK0pfzYIuANZT46gJVP",
-    'PERFREVIEW': "asst_rV1bE7sXFqoVtFZqbKuO0Qqn",
+    'ONBOARDING': AGENT2_ID,
+    'PERFREVIEW': AGENT3_ID,
 }
 
 async def completion(question: str) -> str:
@@ -21,7 +28,7 @@ async def completion(question: str) -> str:
         AzureAIAgent.create_client(credential=creds) as client,
     ):
         # 1. Retrieve the agent definition based on the assistant ID.
-        #    Replace "asst_MwpyijFo7T4MEzwvS8Pb5F98" with your actual assistant ID.
+        print(f"#About to get_agent AGENT1_ID: {AGENT1_ID}")
         agent_definition = await client.agents.get_agent(AGENT1_ID)
         # 2. Create a Semantic Kernel agent using the retrieved definition.
         agent = AzureAIAgent(client=client, definition=agent_definition)
@@ -45,6 +52,7 @@ async def completion(question: str) -> str:
                     subagent_id = subagents["PERFREVIEW"]
                 else:
                     subagent_id = AGENT1_ID
+                print(f"About to get_agent agent ID: {subagent_id}")
                 agent2_definition = await client.agents.get_agent(subagent_id)
                 agent2 = AzureAIAgent(client=client, definition=agent2_definition)
                 

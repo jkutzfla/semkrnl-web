@@ -12,6 +12,6 @@ WORKDIR /app
 COPY backend/requirements.txt ./
 RUN pip install -r requirements.txt
 COPY --from=builder /app/dist ./static
-COPY backend/main.py ./
+COPY backend/*.py ./
 EXPOSE 5000
 CMD ["python", "main.py"]
